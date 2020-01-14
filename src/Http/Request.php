@@ -11,4 +11,21 @@ class Request implements Psr\Http\Message\RequestInterface
         // easy access
         return new self();
     }
+
+    public function getParameter(string $name)
+    {
+        //TODO
+    }
+
+    public function getCookie(string $name)
+    {
+        //TODO
+    }
+
+    public function moveUploadedFile(string $path)
+    {
+        //TODO
+    }
+
+    // TODO: implement methods declared by RequestInterface
 }

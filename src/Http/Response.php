@@ -2,7 +2,7 @@
 
 namespace Framework\Http;
 
-class Response
+class Response implements Psr\Http\Message\ResponseInterface
 {
     public function send(): void
     {
@@ -19,4 +19,6 @@ class Response
     {
         // TODO: just print the content of the response
     }
+
+    // TODO: implement methods declared by ResponseInterface
 }

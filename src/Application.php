@@ -11,12 +11,12 @@ use Framework\Routing\RouteMatch;
 
 class Application
 {
-    public function __construct(Psr\Container $container)
+    public function __construct(Framework\Contracts\ContainerInterface $container)
     {
         // TODO
     }
 
-    public static function create(Psr\Container $container): self
+    public static function create(Framework\Contracts\ContainerInterface $container): self
     {
         // TODO:
         // implement the constructor and make sure that the statically created app is also added to the container

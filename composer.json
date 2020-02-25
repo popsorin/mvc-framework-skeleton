@@ -1,0 +1,15 @@
+{
+    "name": "mvc-famework-skeleton/mvc-framework-skeleton",
+    "authors": [
+        {
+            "name": "Pop Sorin",
+            "email": "popsorin15@gmail.com"
+        }
+    ],
+    "require": {
+        "psr/http-message": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {"Framework\\": "src/"}
+    }
+}

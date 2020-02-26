@@ -1,29 +1,26 @@
 <?php
 
-namespace Framework\config;
+use Framework\Router\Router;
 
-const CONFIG_KEY_PATH = 'path';
-const CONFIG_KEY_CONTROLLER_NAME = 'ControllerName';
-const CONFIG_KEY_ACTION = 'Action';
-const CONFIG_KEY_METHOD = 'Method';
-const CONTROLLER_NAMESPACE = 'Framework/Controller';
-const SUFFIX = 'Controller';
-const USER_ALIAS ='id';
-const SET_ALIAS ='id';
 
-return array(
-'user_controller_add' =>
+//nu putem configura si router si dispacher ??
+return [
+    Router::CONFIG_KEY_DISPATCHER => [Router::CONFIG_KEY_NAMESPACE => 'Framework/Controller',
+                                      Router::CONFIG_KEY_SUFFIX => 'Controller'],
+    Router::CONFIG_KEY_ROUTER =>[
+    'user_controller_add' =>
     [
-        CONFIG_KEY_PATH => '/user/add',
-        CONFIG_KEY_CONTROLLER_NAME => CONTROLLER_NAMESPACE . '/User'.SUFFIX,
-        CONFIG_KEY_ACTION  => 'add',
-        CONFIG_KEY_METHOD => 'POST'
+        Router::CONFIG_KEY_PATH => '/user/add',
+        Router::CONFIG_KEY_CONTROLLER_NAME => 'user',
+        Router::CONFIG_KEY_ACTION  => 'add',
+        Router::CONFIG_KEY_METHOD => 'POST'
     ],
-'user_controller_set' =>
+    'user_controller_set' =>
     [
-        CONFIG_KEY_PATH => '/user/(?<id>1|2)/set/(?<role>1|2|3)',
-        CONFIG_KEY_CONTROLLER_NAME => CONTROLLER_NAMESPACE . '/User'.SUFFIX,
-        CONFIG_KEY_ACTION => 'update',
-        CONFIG_KEY_METHOD => 'PUT'
+        Router::CONFIG_KEY_PATH => '/user/(?<id>1|2)/set/(?<role>1|2|3)',
+        Router::CONFIG_KEY_CONTROLLER_NAME => '/user',
+        Router::CONFIG_KEY_ACTION => 'update',
+        Router::CONFIG_KEY_METHOD => 'POST'
     ]
-);
+    ]
+];

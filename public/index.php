@@ -1,8 +1,11 @@
 <?php
 $baseDir = dirname(__DIR__);
 require $baseDir.'/vendor/autoload.php';
+
+use Framework\Exceptions\PathNotFoundException;
 use Framework\Router\Router;
 use Framework\Http\Request;
+ini_set("display_errors",1);
 
 $configuration = require '../config/routerConfig.php';
 //use Framework\Application;
@@ -19,7 +22,13 @@ $response->send();*/
 
 $router = new Router($configuration);
 $request =  new Request();
-$match = $router->route($request);
-
-echo $match->getMethod() . PHP_EOL . $match->getControllerName() . PHP_EOL .$match->getActionName() . PHP_EOL ;
+try {
+    $match = $router->route($request);
+    echo " Method:" . $match->getMethod() . "<br>" .
+    " Controller:" . $match->getControllerName() . "<br>" .
+    " Action:" . PHP_EOL .$match->getActionName() . "<br>";
 print_r($match->getRequestAttributes());
+}
+catch (PathNotFoundException $exception) {
+    echo $exception->getMessage();
+}

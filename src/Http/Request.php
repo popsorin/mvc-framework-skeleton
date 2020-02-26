@@ -142,7 +142,7 @@ class Request implements RequestInterface
      */
     public function getMethod()
     {
-        return "POST";
+        return "PUT";
     }
 
     /**
@@ -163,7 +163,7 @@ class Request implements RequestInterface
 
     public function getPath()
     {
-        return "/user/3/set/9";
+        return "/user/1/set/2";
     }
     /**
      * @inheritDoc

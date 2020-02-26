@@ -142,7 +142,7 @@ class Request implements RequestInterface
      */
     public function getMethod()
     {
-        // TODO: Implement getMethod() method.
+        return "POST";
     }
 
     /**
@@ -161,6 +161,10 @@ class Request implements RequestInterface
         // TODO: Implement getUri() method.
     }
 
+    public function getPath()
+    {
+        return "/user/3/set/9";
+    }
     /**
      * @inheritDoc
      */

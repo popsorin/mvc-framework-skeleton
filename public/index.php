@@ -1,13 +1,13 @@
 <?php
-use Framework\Application;
+$baseDir = dirname(__DIR__);
+require $baseDir.'/vendor/autoload.php';
+use Framework\Router\Router;
 use Framework\Http\Request;
 
-// obtain the base directory for the web application a.k.a. document root
-$baseDir = dirname(__DIR__);
-
-// setup auto-loading
-require $baseDir.'/vendor/autoload.php';
-
+$configuration = require '../config/routerConfig.php';
+//use Framework\Application;
+//use Framework\Http\Request;
+/*
 // obtain the DI container
 $container = require $baseDir.'/config/services.php';
 
@@ -15,4 +15,11 @@ $container = require $baseDir.'/config/services.php';
 $application = Application::create($container);
 $request = Request::createFromGlobals();
 $response = $application->handle($request);
-$response->send();
+$response->send();*/
+
+$router = new Router($configuration);
+$request =  new Request();
+$match = $router->route($request);
+
+echo $match->getMethod() . PHP_EOL . $match->getControllerName() . PHP_EOL .$match->getActionName() . PHP_EOL ;
+print_r($match->getRequestAttributes());

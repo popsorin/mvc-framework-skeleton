@@ -8,25 +8,34 @@ use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
 {
-    const DEFAULT_MEMORY = 5*1024*1024;
-    const DEFAULT_MOD= 'r+';
+    const DEFAULT_MEMORY = 5 * 1024 * 1024;
+    const DEFAULT_MODE = 'r+';
     private $stream;
     private $seekable;
-    private $readble;
+    private $readable;
     private $writable;
     private $size;
 
-    public function __construct(string $content)
+    public function __construct($handler, ?int $size = null)
     {
-        $this->stream = fopen(sprintf('php://temp/maxmemory:%s'),self::DEFAULT_MEMORY, self::DEFAULT_MOD);
-        $this->size = strlen($content);
-        $this->writable = $this->readble = $this->seekable = true;
+        $this->stream = $handler;
+        $this->size = $size;
+        $this->writable = $this->readable = $this->seekable = true;
     }
+
+    public static function createFromString(string $content): self
+    {
+        $stream = fopen(sprintf("php://temp/maxmemory:%s", self::DEFAULT_MEMORY), self::DEFAULT_MODE);
+        fwrite($stream, $content);
+        return new self($stream, strlen($content));
+    }
+
     /**
      * @inheritDoc
      */
     public function __toString()
     {
+        $this->rewind();
         return fread($this->stream, $this->size);
     }
 
@@ -35,6 +44,7 @@ class Stream implements StreamInterface
      */
     public function close()
     {
+        $this->seekable = $this->writable = $this->readable = false;
         fclose($this->stream);
     }
 
@@ -43,8 +53,15 @@ class Stream implements StreamInterface
      */
     public function detach()
     {
-        //close care verifica daca exista stream
-        // TODO: Implement detach() method.
+        if ($this->stream) {
+            $this->close();
+        }
+
+        $newStream = $this->stream;
+        unset($this->stream);
+        $this->writable = $this->readable = $this->seekable = false;
+
+        return $newStream;
     }
 
     /**
@@ -116,7 +133,7 @@ class Stream implements StreamInterface
      */
     public function isReadable()
     {
-        $this->readble;
+        $this->readable;
     }
 
     /**
@@ -132,6 +149,7 @@ class Stream implements StreamInterface
      */
     public function getContents()
     {
+        $this->rewind();
         return stream_get_contents($this->stream);
     }
 

@@ -34,6 +34,7 @@ class RouteMatch
         $this->action = $action;
         $this->requestAttributes = $requestAttributes;
     }
+
     public function getMethod(): string
     {
         return $this->method;

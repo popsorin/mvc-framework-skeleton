@@ -9,15 +9,12 @@ use Framework\Exceptions\PathNotFoundException;
 
 class Router implements RouterInterface
 {
-    public const CONFIG_KEY_DISPATCHER = 'dispatcher';
     public const CONFIG_KEY_ROUTER = 'router';
-    public const CONFIG_KEY_NAMESPACE = 'controller_namespace';
-    public const CONFIG_KEY_SUFFIX = 'suffix';
     public const CONFIG_KEY_PATH = 'path';
     public const CONFIG_KEY_CONTROLLER_NAME = 'ControllerName';
     public const CONFIG_KEY_ACTION = 'Action';
     public const CONFIG_KEY_METHOD = 'Method';
-
+    
     /**
      * @var array
      */
@@ -25,45 +22,61 @@ class Router implements RouterInterface
 
     public function __construct(array $configuration)
     {
-        $this->configuration = $configuration['router'];
+        $this->configuration = $configuration;
     }
 
+    /**
+     * @param Request $request
+     * @return RouteMatch
+     * @throws PathNotFoundException
+     */
     public function route(Request $request): RouteMatch
     {
-        foreach ($this->configuration as $key=>$value) {
-            $method = $request->getMethod();
+        $method = $request->getMethod();
+        $requestPath = $request->getUri()->getPath();
 
-            $config = $value[self::CONFIG_KEY_METHOD];
+        foreach ($this->configuration as $key => $value) {
             if($value[self::CONFIG_KEY_METHOD]  !== $method) {
                 continue;
             }
-            //replace all the '/' with '\/' in the URI from the configuration
-            $path =self::preparePath($value[self::CONFIG_KEY_PATH]);
+
+            $path =$this->preparePath($value[(self::CONFIG_KEY_PATH)]);
+
+            //Search in the configuration array for the same path and the same method as the ones from the request
             $requestAttributes = [];
-            //search in the configuration array for the same path and the same
-            //method as the ones from the request
-            if(preg_match($path, $request->getPath(), $requestAttributes)) {
-             //deletes the keys with numerical valuef
-                    $requestAttributes = array_filter($requestAttributes,function ($variable) {
-                            return !is_int($variable);
-                    }, ARRAY_FILTER_USE_KEY);
-                    return new RouteMatch(
-                        $request->getMethod(),
-                        $value[self::CONFIG_KEY_CONTROLLER_NAME],
-                        $value[self::CONFIG_KEY_ACTION],
-                        $requestAttributes
-                    );
+            if(preg_match($path, $requestPath, $requestAttributes)) {
+             //Deletes the keys with numerical value preg_match gives numerical and string keys so i need to delete the numerical ones
+                $requestAttributes = $this->filter($requestAttributes);
+                return new RouteMatch
+                (
+                    $request->getMethod(),
+                    $value[self::CONFIG_KEY_CONTROLLER_NAME],
+                    $value[self::CONFIG_KEY_ACTION],
+                    $requestAttributes,
+                );
             }
+
+
+
+
+
         }
 
-        throw new PathNotFoundException();
+        throw new PathNotFoundException($requestPath);
     }
 
-    //
-    private static function preparePath($path)
+    //replace all the '/' with '\/' in the Uri from the configuration
+    private function preparePath($path)
     {
         $value[$path] = preg_replace('/\//', '\/', $path);
 
         return '/' . $value[$path] . '/';
+    }
+
+    private function filter(array $requestAttributes)
+    {
+        return array_filter($requestAttributes,function ($variable) {
+            return !is_int($variable);
+        }, ARRAY_FILTER_USE_KEY);
     }
 }

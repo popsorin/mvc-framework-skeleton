@@ -7,8 +7,22 @@ use Throwable;
 
 class PathNotFoundException extends Exception
 {
-    public function __construct($message = "Path has not been found.", $code = 0, Throwable $previous = null)
+    /**
+     * @var string
+     */
+    private $path;
+
+    public function __construct(string $path, $message = "Path has not been found.", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
+        $this->path = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
     }
 }

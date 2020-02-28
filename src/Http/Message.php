@@ -9,13 +9,40 @@ use Psr\Http\Message\StreamInterface;
 
 class Message implements MessageInterface
 {
+    /**
+     * @var string
+     */
+    private $protocolVersion;
+
+    /**
+     * @var array
+     */
+    private $headers;
+
+    /**
+     * @var StreamInterface
+     */
+    private $body;
+
+    /**
+     * Message constructor.
+     * @param string $protocolVersion
+     * @param string[] $headers
+     * @param StreamInterface $body
+     */
+    public function __construct(string $protocolVersion, StreamInterface $body)
+    {
+        $this->protocolVersion = $protocolVersion;
+        $this->body = $body;
+    }
+
 
     /**
      * @inheritDoc
      */
     public function getProtocolVersion()
     {
-        // TODO: Implement getProtocolVersion() method.
+        return $this->protocolVersion;
     }
 
     /**
@@ -23,7 +50,10 @@ class Message implements MessageInterface
      */
     public function withProtocolVersion($version)
     {
-        // TODO: Implement withProtocolVersion() method.
+        $message = clone $this;
+        $message->protocolVersion = $version;
+
+        return $message;
     }
 
     /**
@@ -31,7 +61,7 @@ class Message implements MessageInterface
      */
     public function getHeaders()
     {
-        // TODO: Implement getHeaders() method.
+        return $this->headers;
     }
 
     /**
@@ -39,7 +69,7 @@ class Message implements MessageInterface
      */
     public function hasHeader($name)
     {
-        // TODO: Implement hasHeader() method.
+        return ($this->headers[$name] !== null);
     }
 
     /**
@@ -47,7 +77,7 @@ class Message implements MessageInterface
      */
     public function getHeader($name)
     {
-        // TODO: Implement getHeader() method.
+        return $this->headers[$name];
     }
 
     /**
@@ -55,7 +85,12 @@ class Message implements MessageInterface
      */
     public function getHeaderLine($name)
     {
-        // TODO: Implement getHeaderLine() method.
+        $headerString = "";
+        foreach ($this->headers[$name] as $header){
+            $headerString .= $header;
+        }
+
+        return $headerString;
     }
 
     /**
@@ -63,7 +98,17 @@ class Message implements MessageInterface
      */
     public function withHeader($name, $value)
     {
-        // TODO: Implement withHeader() method.
+        if(is_array($value)) {
+            $message = clone $this;
+            if($message[$name] === null) {
+                throw new \InvalidArgumentException();
+            }
+            $message[$name] = $value;
+
+            return $message;
+        }
+
+        throw new \InvalidArgumentException();
     }
 
     /**
@@ -71,7 +116,18 @@ class Message implements MessageInterface
      */
     public function withAddedHeader($name, $value)
     {
-        // TODO: Implement withAddedHeader() method.
+        if(is_array($value)) {
+            $message = clone $this;
+            if(!isset($message->headers[$name])) {
+                $message->headers[$name] = $value;
+            }
+            else {
+                array_merge($message->headers[$name], $value);
+            }
+
+            return $message;
+        }
+        throw new \InvalidArgumentException();
     }
 
     /**
@@ -79,7 +135,10 @@ class Message implements MessageInterface
      */
     public function withoutHeader($name)
     {
-        // TODO: Implement withoutHeader() method.
+        $message = clone $this;
+        unset($this->headers[$name]);
+
+        return $message;
     }
 
     /**
@@ -87,7 +146,7 @@ class Message implements MessageInterface
      */
     public function getBody()
     {
-        // TODO: Implement getBody() method.
+        return $this->body;
     }
 
     /**
@@ -95,6 +154,21 @@ class Message implements MessageInterface
      */
     public function withBody(StreamInterface $body)
     {
-        // TODO: Implement withBody() method.
+        $message = clone $this;
+        $message->body = $body;
+
+        return $message;
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return $this
+     */
+    public function addRawHeader($name, $value): self
+    {
+        $name = ucwords(strtolower(strtr(substr($name, 5), '_', '-')), '-');
+        $this->headers[$name] = explode(',', $value);
+        return $this;
     }
 }

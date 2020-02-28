@@ -14,13 +14,11 @@ abstract class AbstractController
     /**
      * @var RendererInterface
      */
-    private $renderer;
+    protected $renderer;
 
     public function __construct(RendererInterface $renderer)
     {
         // Rendered gets constructor injected
         $this->renderer = $renderer;
     }
-
-    // TODO: inject other services: session handling, mail sending, etc. into the actual controllers where needed
 }

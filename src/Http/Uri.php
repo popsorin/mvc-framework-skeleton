@@ -6,36 +6,73 @@ namespace Framework\Http;
 
 use Psr\Http\Message\UriInterface;
 
-class URI implements UriInterface
+class Uri implements UriInterface
 {
-    private $scheme;
-    private $userInfo;
-    private $host;
-    private $port;
-    private $path;
-    private $query;
-    public $fragment;
     /**
-     * URI constructor.
+     * @var string
+     */
+    private $scheme;
+
+    /**
+     * @var string
+     */
+    private $user;
+
+    /**
+     * @var string
+     */
+    private $password;
+
+    /**
+     * @var string
+     */
+    private $host;
+
+    /**
+     * @var int
+     */
+    private $port;
+
+    /**
+     * @var string
+     */
+    private $path;
+
+    /**
+     * @var string
+     */
+    private $query;
+
+    /**
+     * @var string
+     */
+    private $fragment;
+
+    /**
+     * Uri constructor.
      * @param string $scheme
-     * @param string $userInfo
+     * @param string $user
+     * @param string $password
      * @param string $host
-     * @param string $port
+     * @param int $port
      * @param string $path
      * @param string $query
      * @param string $fragment
      */
     public function __construct(
-        string $scheme,
-        string $userInfo,
-        string $host,
-        string $port,
-        string $path,
-        string $query,
-        string $fragment
-    ) {
+        string $scheme = "",
+        string $user = "",
+        string $password = "",
+        string $host = "",
+        int $port = null,
+        string $path = "",
+        string $query = "",
+        string $fragment = ""
+    )
+    {
         $this->scheme = $scheme;
-        $this->userInfo = $userInfo;
+        $this->user = $user;
+        $this->password = $password;
         $this->host = $host;
         $this->port = $port;
         $this->path = $path;
@@ -43,6 +80,18 @@ class URI implements UriInterface
         $this->fragment = $fragment;
     }
 
+    public static function createFromGlobals(): self
+    {
+        return new Uri(
+            explode('/', $_SERVER["SERVER_PROTOCOL"])[1],
+            "",
+            "",
+            $_SERVER["HTTP_HOST"],
+            (int)$_SERVER["SERVER_PORT"],
+            explode('?', $_SERVER["REQUEST_URI"])[0],
+            $_SERVER["QUERY_STRING"]
+        );
+    }
 
     /**
      * @inheritDoc
@@ -57,7 +106,14 @@ class URI implements UriInterface
      */
     public function getAuthority()
     {
-        return $this->userInfo . $this->host . $this->port;
+        $user = $host = $port = "";
+        if ($this->user !== "")
+            $user = $this->user . ':';
+        if ($this->host !== "")
+            $host = '@' . $this->host;
+        if ($this->port !== null)
+            $port = ':' . $this->port;
+        return $user . $this->password . $host . $port;
     }
 
     /**
@@ -65,7 +121,9 @@ class URI implements UriInterface
      */
     public function getUserInfo()
     {
-        return $this->userInfo;
+        if ($this->password == "")
+            return strtolower($this->user);
+        return strtolower($this->user . ':' . $this->password);
     }
 
     /**
@@ -73,7 +131,7 @@ class URI implements UriInterface
      */
     public function getHost()
     {
-        return $this->host;
+        return strtolower($this->host);
     }
 
     /**
@@ -190,6 +248,35 @@ class URI implements UriInterface
      */
     public function __toString()
     {
-        //return $this->scheme .
+        $uri = "";
+        $autority = $this->getAuthority();
+        if ($this->scheme !== "")
+            $uri .= $this->scheme . ':';
+        if ($autority !== "")
+            $uri .= '//' . $autority;
+        if ($this->path !== "")
+            $uri .= '/' . $this->path;
+        if ($this->query !== "")
+            $uri .= '?' . $this->query;
+        if ($this->fragment !== "")
+            $uri .= '#' . $this->fragment;
+
+        return $uri;
     }
+
+    /**
+     * @return array
+     */
+    public function getQueryArray(): array
+    {
+        $queryArray = explode('&', $this->query);
+        $finalArray = [];
+        foreach ($queryArray as $key => $query) {
+            $auxArray = explode('=', $query);
+            $finalArray[$auxArray[0]] = $auxArray[1];
+        }
+
+        return $finalArray;
+    }
+
 }

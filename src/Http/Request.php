@@ -6,119 +6,76 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
-class Request implements RequestInterface
+class Request extends Message implements RequestInterface
 {
+    /**
+     * @var string
+     *
+     */
+    private $method;
+
+    /**
+     * @var string
+     */
+    private $requestTarget;
+
+    /**
+     * @var UriInterface
+     */
+    private $uri;
+
+    public function __construct(
+        string $method,
+        StreamInterface $body,
+        string $protocolVersion,
+        string $requestTarget,
+        UriInterface $uri
+    ) {
+        parent::__construct($protocolVersion, $body);
+        $this->method = $method;
+        $this->uri = $uri;
+        $this->requestTarget = $requestTarget;
+    }
     public static function createFromGlobals(): self
     {
-        // TODO:
-        // look in $_GET, $_POST, $_SERVER, $_FILES, $_COOKIES and extract data into this objects properties for
-        // easy access
-        return new self();
+        $request = new self(
+            $_SERVER['REQUEST_METHOD'],
+            new Stream(fopen("php://input", 'r')),
+            explode('/', $_SERVER["SERVER_PROTOCOL"])[1],
+            $_SERVER["SERVER_NAME"],
+            Uri::createFromGlobals()
+        ) ;
+        foreach ($_SERVER as $key=>$value) {
+
+            if(strstr($key, "HTTP")) {
+                $request->addRawHeader($key, $value);
+            }
+        }
+
+        return $request;
+
     }
 
     public function getParameter(string $name)
     {
-        //TODO
+        $queryArray = $this->uri->getQueryArray();
+        return $this->uri->getQueryArray()[$name];
     }
 
     public function getCookie(string $name)
     {
-        //TODO
+        return $_COOKIE[$name];
     }
 
-    public function moveUploadedFile(string $path)
+    public function moveUploadedFile(string $fileInputName, string $path)
     {
-        //TODO
-    }
-
-    // TODO: implement methods declared by RequestInterface
-
-    /**
-     * @inheritDoc
-     */
-    public function getProtocolVersion()
-    {
-        // TODO: Implement getProtocolVersion() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withProtocolVersion($version)
-    {
-        // TODO: Implement withProtocolVersion() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHeaders()
-    {
-        // TODO: Implement getHeaders() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function hasHeader($name)
-    {
-        // TODO: Implement hasHeader() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHeader($name)
-    {
-        // TODO: Implement getHeader() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHeaderLine($name)
-    {
-        // TODO: Implement getHeaderLine() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withHeader($name, $value)
-    {
-        // TODO: Implement withHeader() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withAddedHeader($name, $value)
-    {
-        // TODO: Implement withAddedHeader() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withoutHeader($name)
-    {
-        // TODO: Implement withoutHeader() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getBody()
-    {
-        // TODO: Implement getBody() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withBody(StreamInterface $body)
-    {
-        // TODO: Implement withBody() method.
+       if(!isset($_FILES[$fileInputName])) {
+           //change the exception name
+           throw new \Exception();
+       }
+       if($_FILES[$fileInputName]['error'] !== UPLOAD_ERR_OK) {
+           move_uploaded_file($_FILES[$fileInputName]['tmp_name'], $path);
+       }
     }
 
     /**
@@ -126,7 +83,7 @@ class Request implements RequestInterface
      */
     public function getRequestTarget()
     {
-        // TODO: Implement getRequestTarget() method.
+        return $this->requestTarget;
     }
 
     /**
@@ -134,7 +91,8 @@ class Request implements RequestInterface
      */
     public function withRequestTarget($requestTarget)
     {
-        // TODO: Implement withRequestTarget() method.
+        $request = clone $this;
+        $request->requestTarget = $requestTarget;
     }
 
     /**
@@ -142,7 +100,7 @@ class Request implements RequestInterface
      */
     public function getMethod()
     {
-        return "POST";
+        return $this->method;
     }
 
     /**
@@ -150,7 +108,10 @@ class Request implements RequestInterface
      */
     public function withMethod($method)
     {
-        // TODO: Implement withMethod() method.
+        $request = clone $this;
+        $request->method = $method;
+
+        return $request;
     }
 
     /**
@@ -158,18 +119,17 @@ class Request implements RequestInterface
      */
     public function getUri()
     {
-        // TODO: Implement getUri() method.
+        return $this->uri;
     }
 
-    public function getPath()
-    {
-        return "/user/1/set/2";
-    }
     /**
      * @inheritDoc
      */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
-        // TODO: Implement withUri() method.
+        $request = clone $this;
+        $request->uri = $uri;
+
+        return $request;
     }
 }

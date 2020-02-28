@@ -88,7 +88,7 @@ class Uri implements UriInterface
             "",
             $_SERVER["HTTP_HOST"],
             (int)$_SERVER["SERVER_PORT"],
-            explode('?', $_SERVER["REQUEST_URI"])[0],
+            $_SERVER["REQUEST_URI"],
             $_SERVER["QUERY_STRING"]
         );
     }

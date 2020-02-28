@@ -52,14 +52,9 @@ class Router implements RouterInterface
                     $request->getMethod(),
                     $value[self::CONFIG_KEY_CONTROLLER_NAME],
                     $value[self::CONFIG_KEY_ACTION],
-                    $requestAttributes,
+                    $requestAttributes
                 );
             }
-
-
-
-
-
         }
 
         throw new PathNotFoundException($requestPath);

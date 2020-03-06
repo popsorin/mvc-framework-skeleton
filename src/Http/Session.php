@@ -24,16 +24,27 @@ class Session implements SessionInterface
         session_regenerate_id();
     }
 
+    /**
+     * @param string $name
+     * @param $value
+     */
     public function set(string $name, $value): void
     {
         $_SESSION[$name] = $value;
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function get(string $name)
     {
         return $_SESSION[$name];
     }
 
+    /**
+     * @param string $name
+     */
     public function delete(string $name)
     {
         unset($_SESSION[$name]);

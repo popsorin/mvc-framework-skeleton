@@ -80,6 +80,9 @@ class Uri implements UriInterface
         $this->fragment = $fragment;
     }
 
+    /**
+     * @return static
+     */
     public static function createFromGlobals(): self
     {
         return new Uri(

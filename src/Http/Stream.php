@@ -16,6 +16,11 @@ class Stream implements StreamInterface
     private $writable;
     private $size;
 
+    /**
+     * Stream constructor.
+     * @param $handler
+     * @param int|null $size
+     */
     public function __construct($handler, ?int $size = null)
     {
         $this->stream = $handler;
@@ -23,6 +28,10 @@ class Stream implements StreamInterface
         $this->writable = $this->readable = $this->seekable = true;
     }
 
+    /**
+     * @param string $content
+     * @return static
+     */
     public static function createFromString(string $content): self
     {
         $stream = fopen(sprintf("php://temp/maxmemory:%s", self::DEFAULT_MEMORY), self::DEFAULT_MODE);

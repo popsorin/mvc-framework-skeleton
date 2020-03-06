@@ -2,25 +2,32 @@
 
 namespace Framework;
 
-use Exception;
 use Framework\Contracts\ContainerInterface;
 use Framework\Contracts\DispatcherInterface;
 use Framework\Contracts\RouterInterface;
-use Framework\Dispatcher\Dispatcher;
 use Framework\Http\Request;
 use Framework\Http\Response;
-use Framework\Router\Router;
-use Framework\Routing\RouteMatch;
 
 class Application
 {
+    /**
+     * @var ContainerInterface
+     */
     private $container;
 
+    /**
+     * Application constructor.
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
+    /**
+     * @param ContainerInterface $container
+     * @return static
+     */
     public static function create(ContainerInterface $container): self
     {
         $application =  new self($container);
@@ -29,6 +36,10 @@ class Application
         return $application;
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function handle(Request $request): Response
     {
         $routeMatch = $this->getRouter()->route($request);
@@ -36,11 +47,17 @@ class Application
         return $this->getDispatcher()->dispatch($routeMatch, $request);
     }
 
+    /**
+     * @return RouterInterface
+     */
     private function getRouter(): RouterInterface
     {
         return $this->container->get(RouterInterface::class);
     }
 
+    /**
+     * @return DispatcherInterface
+     */
     private function getDispatcher(): DispatcherInterface
     {
         return $this->container->get(DispatcherInterface::class);

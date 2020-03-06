@@ -2,6 +2,7 @@
 
 namespace Framework\Routing;
 
+
 class RouteMatch
 {
     /**
@@ -21,7 +22,13 @@ class RouteMatch
      */
     private $requestAttributes;
 
-
+    /**
+     * RouteMatch constructor.
+     * @param string $method
+     * @param string $controllerName
+     * @param string $action
+     * @param array $requestAttributes
+     */
     public function __construct
     (
         string $method,
@@ -35,23 +42,33 @@ class RouteMatch
         $this->requestAttributes = $requestAttributes;
     }
 
+    /**
+     * @return string
+     */
     public function getMethod(): string
     {
         return $this->method;
     }
 
+    /**
+     * @return string
+     */
     public function getControllerName(): string
     {
         return $this->controllerName;
     }
 
-
+    /**
+     * @return string
+     */
     public function getActionName(): string
     {
         return $this->action;
     }
 
-
+    /**
+     * @return array
+     */
     public function getRequestAttributes(): array
     {
         return $this->requestAttributes;

@@ -35,7 +35,7 @@ class Response extends Message implements ResponseInterface
 
     private function sendHeaders(): void
     {
-       foreach ($this->getHeaders() as $header => $values){
+       foreach ($this->getHeaders() as $header => $values) {
            header($header . ':' . implode(', ', $values));
         }
     }

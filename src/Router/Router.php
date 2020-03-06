@@ -20,6 +20,10 @@ class Router implements RouterInterface
      */
     private $configuration;
 
+    /**
+     * Router constructor.
+     * @param array $configuration
+     */
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
@@ -60,6 +64,10 @@ class Router implements RouterInterface
         throw new PathNotFoundException($requestPath);
     }
 
+    /**
+     * @param $path
+     * @return string
+     */
     //replace all the '/' with '\/' in the Uri from the configuration
     private function preparePath($path)
     {
@@ -68,6 +76,10 @@ class Router implements RouterInterface
         return '/' . $value[$path] . '/';
     }
 
+    /**
+     * @param array $requestAttributes
+     * @return array
+     */
     private function filter(array $requestAttributes)
     {
         return array_filter($requestAttributes,function ($variable) {

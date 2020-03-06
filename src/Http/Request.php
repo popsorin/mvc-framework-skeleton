@@ -24,18 +24,40 @@ class Request extends Message implements RequestInterface
      */
     private $uri;
 
+    /**
+     * @var
+     */
+    private $parameters;
+
+    //add cookues property
+    //add routeParameter
+    /**
+     * Request constructor.
+     * @param string $method
+     * @param StreamInterface $body
+     * @param string $protocolVersion
+     * @param string $requestTarget
+     * @param UriInterface $uri
+     * @param array $parameters
+     */
     public function __construct(
         string $method,
         StreamInterface $body,
         string $protocolVersion,
         string $requestTarget,
-        UriInterface $uri
+        UriInterface $uri,
+        array $parameters
     ) {
         parent::__construct($protocolVersion, $body);
         $this->method = $method;
         $this->uri = $uri;
         $this->requestTarget = $requestTarget;
+        $this->parameters = $parameters;
     }
+
+    /**
+     * @return static
+     */
     public static function createFromGlobals(): self
     {
         $request = new self(
@@ -43,7 +65,8 @@ class Request extends Message implements RequestInterface
             new Stream(fopen("php://input", 'r')),
             explode('/', $_SERVER["SERVER_PROTOCOL"])[1],
             $_SERVER["SERVER_NAME"],
-            Uri::createFromGlobals()
+            Uri::createFromGlobals(),
+            $_REQUEST[]
         ) ;
         foreach ($_SERVER as $key=>$value) {
 
@@ -56,13 +79,20 @@ class Request extends Message implements RequestInterface
 
     }
 
-    public function getParameter(string $name)
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function getParameter(string $name) :?string
     {
-        $queryArray = $this->uri->getQueryArray();
-        return $this->uri->getQueryArray()[$name];
+        return $this->parameters[$name];
     }
 
-    public function getCookie(string $name)
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function getCookie(string $name): string
     {
         return $_COOKIE[$name];
     }

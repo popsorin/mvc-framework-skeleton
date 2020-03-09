@@ -80,6 +80,22 @@ class Request extends Message implements RequestInterface
     }
 
     /**
+     * @return array
+     */
+    public function getParameters()
+    {
+        $parameters = [];
+        if(isset($_GET)) {
+            $parameters =  array_merge($parameters, $_GET);
+        }
+        if(isset($_POST)) {
+            $parameters =  array_merge($parameters, $_POST);
+        }
+
+        return $parameters;
+    }
+
+    /**
      * @param string $name
      * @return string
      */

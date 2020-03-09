@@ -73,7 +73,7 @@ class Router implements RouterInterface
     {
         $value[$path] = preg_replace('/\//', '\/', $path);
 
-        return '/' . $value[$path] . '/';
+        return '/^' . $value[$path] . '$/';
     }
 
     /**

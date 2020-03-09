@@ -42,7 +42,7 @@ class Stream implements StreamInterface
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): ?string
     {
         $this->rewind();
         return fread($this->stream, $this->size);

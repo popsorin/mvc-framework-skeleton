@@ -66,7 +66,7 @@ class Request extends Message implements RequestInterface
             explode('/', $_SERVER["SERVER_PROTOCOL"])[1],
             $_SERVER["SERVER_NAME"],
             Uri::createFromGlobals(),
-            $_REQUEST[]
+            self::getParameters()
         ) ;
         foreach ($_SERVER as $key=>$value) {
 
@@ -82,7 +82,7 @@ class Request extends Message implements RequestInterface
     /**
      * @return array
      */
-    public function getParameters()
+    public static function getParameters()
     {
         $parameters = [];
         if(isset($_GET)) {

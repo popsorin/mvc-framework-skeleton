@@ -101,6 +101,9 @@ class Request extends Message implements RequestInterface
      */
     public function getParameter(string $name) :?string
     {
+        if(!array_key_exists($name, $this->parameters)) {
+            return null;
+        }
         return $this->parameters[$name];
     }
 

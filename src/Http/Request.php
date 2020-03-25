@@ -97,9 +97,9 @@ class Request extends Message implements RequestInterface
 
     /**
      * @param string $name
-     * @return string
+     * @return mixed|null
      */
-    public function getParameter(string $name) :?string
+    public function getParameter(string $name)
     {
         if(!array_key_exists($name, $this->parameters)) {
             return null;

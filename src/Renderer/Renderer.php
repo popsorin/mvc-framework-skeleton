@@ -5,6 +5,7 @@ namespace Framework\Renderer;
 use Framework\Contracts\RendererInterface;
 use Framework\Http\Response;
 use Framework\Http\Stream;
+use Framework\Service\URLHelper;
 
 class Renderer implements RendererInterface
 {
@@ -12,6 +13,11 @@ class Renderer implements RendererInterface
      * @var string
      */
     private $baseViewsPath;
+
+    /**
+     * @var URLHelper
+     */
+    private $urlHelper;
 
     /**
      * Renderer constructor.
@@ -49,5 +55,13 @@ class Renderer implements RendererInterface
         $stream = Stream::createFromString($json);
 
         return new Response($stream);
+    }
+
+    /**
+     * @return URLHelper
+     */
+    public function getURLHelper(): URLHelper
+    {
+        return $this->urlHelper;
     }
 }
